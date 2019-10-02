@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_example_app/networking/requests/translation_request.dart';
+import 'package:flutter_example_app/screens/home_widget.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'internationalization/languages.dart' as language;
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: Home(),
     );
   }
 }
