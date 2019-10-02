@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_example_app/networking/requests/translation_request.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'internationalization/languages.dart' as language;
 import 'internationalization/localizations.dart';
 import 'internationalization/localizations_delegate.dart';
+import 'networking/models/translation.dart';
 
 final Iterable<Locale> supportedLocales = <Locale>[
   const Locale(language.english, ''),
@@ -17,7 +19,9 @@ final Iterable<LocalizationsDelegate<dynamic>> localizationsDelegates =
   GlobalCupertinoLocalizations.delegate,
 ];
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -34,21 +38,13 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  Translation translation;
+  final TextEditingController textController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -60,21 +56,30 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
+            TextField(
+              controller: textController,
+              decoration: InputDecoration(
+                  border: InputBorder.none, hintText: 'Enter a search term'),
             ),
             Text(
-              '$_counter',
+              translation?.detectedSourceLanguage ?? '',
+            ),
+            Text(
+              '${translation?.translatedText ?? ''}',
               style: Theme.of(context).textTheme.display1,
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
+        onPressed: pingGoogle,
+        child: Icon(Icons.send),
       ),
     );
+  }
+
+  Future<void> pingGoogle() async {
+    translation = await translationRequest(textController.text, 'es');
+    setState(() {});
   }
 }
