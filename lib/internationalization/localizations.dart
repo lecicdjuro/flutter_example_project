@@ -28,4 +28,24 @@ class LocalizationResources {
   String get title {
     return Intl.message('', name: 'title');
   }
+
+  String get noInternet {
+    return Intl.message('', name: 'noInternet');
+  }
+
+  String get noInternetDescription {
+    return Intl.message('', name: 'noInternetDescription');
+  }
+
+  String get ok {
+    return Intl.message('', name: 'ok');
+  }
+
+  String get genericErrorTitle {
+    return Intl.message('', name: 'genericErrorTitle');
+  }
+
+  String get genericError {
+    return Intl.message('', name: 'genericError');
+  }
 }
