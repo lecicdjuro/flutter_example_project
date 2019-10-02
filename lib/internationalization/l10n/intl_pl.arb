@@ -1,0 +1,10 @@
+{
+  "@@last_modified": "2018-05-25T11:50:40.743319",
+  "@@locale": "pl",
+  "title": "Supernova Translator",
+  "@title": {
+    "description": "The application title",
+    "type": "text",
+    "placeholders": {}
+  }
+}
