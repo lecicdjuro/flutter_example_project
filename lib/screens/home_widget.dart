@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_example_app/internationalization/localizations.dart';
+import 'package:flutter_example_app/networking/models/language.dart';
 import 'package:flutter_example_app/screens/favorites_widget.dart';
 import 'package:flutter_example_app/screens/translator_widget.dart';
 
 class Home extends StatefulWidget {
+  Home(this.supportedLanguages);
+
+  final List<Language> supportedLanguages;
+
   @override
   State<StatefulWidget> createState() {
     return _HomeState();
@@ -34,7 +39,7 @@ class _HomeState extends State<Home> {
         ],
       ),
       body: tabIndex == 0
-          ? SupernovaTranslatorScreen()
+          ? SupernovaTranslatorScreen(widget.supportedLanguages)
           : FavoritesScreen(Colors.red),
     );
   }

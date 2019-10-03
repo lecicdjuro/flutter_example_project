@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_example_app/networking/models/language.dart';
 import 'package:flutter_example_app/networking/requests/translation_request.dart';
 import 'package:flutter_example_app/screens/home_widget.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -7,6 +8,7 @@ import 'internationalization/languages.dart' as language;
 import 'internationalization/localizations.dart';
 import 'internationalization/localizations_delegate.dart';
 import 'networking/models/translation.dart';
+import 'networking/requests/supported_languages_request.dart';
 
 final Iterable<Locale> supportedLocales = <Locale>[
   const Locale(language.english, ''),
@@ -21,10 +23,18 @@ final Iterable<LocalizationsDelegate<dynamic>> localizationsDelegates =
 ];
 
 void main() {
-  runApp(MyApp());
+  getSupportedLanguages().then((List<Language> languages) {
+    runApp(SupernovaApp(languages));
+  }).catchError((error) {
+    print(error);
+  });
 }
 
-class MyApp extends StatelessWidget {
+class SupernovaApp extends StatelessWidget {
+  const SupernovaApp(this.supportedLanguages);
+
+  final List<Language> supportedLanguages;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -33,7 +43,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Home(),
+      home: Home(supportedLanguages),
     );
   }
 }

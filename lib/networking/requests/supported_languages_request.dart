@@ -10,7 +10,6 @@ const String charset = 'utf-8';
 
 Future<List<Language>> getSupportedLanguages() async {
   String url = net.baseUrl + '/languages?key=${net.apiKey}';
-//  Map<String, String> header = net.getHeaders();
 
   final response = await http.get(url);
 

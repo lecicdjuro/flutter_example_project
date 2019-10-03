@@ -1,102 +1,141 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_example_app/networking/models/detected_langugage.dart';
 import 'package:flutter_example_app/networking/models/language.dart';
 import 'package:flutter_example_app/networking/models/translation.dart';
-import 'package:flutter_example_app/networking/requests/detect_language_request.dart';
-import 'package:flutter_example_app/networking/requests/supported_languages_request.dart';
 import 'package:flutter_example_app/networking/requests/translation_request.dart';
 
 class SupernovaTranslatorScreen extends StatefulWidget {
+  SupernovaTranslatorScreen(this.supportedLanguages);
+
+  final List<Language> supportedLanguages;
+
   @override
-  TranslatorScreenState createState() => TranslatorScreenState();
+  TranslatorScreenState createState() =>
+      TranslatorScreenState(supportedLanguages);
 }
 
 class TranslatorScreenState extends State<SupernovaTranslatorScreen> {
-  int tabIndex = 0;
-  List<Language> supportedLanguages;
-  Translation translation;
-  Language selectedLanguage;
-  DetectedLanguage detectedLanguage;
+  TranslatorScreenState(this.supportedLanguages);
 
-  final TextEditingController textController = TextEditingController();
+  int tabIndex = 0;
+  final List<Language> supportedLanguages;
+  Translation translation;
+  Language languageTo;
+  Language languageFrom;
+  TextEditingController editingController = TextEditingController();
 
   @override
   void initState() {
+    languageFrom = Language(code: 'Detect');
+    supportedLanguages.insert(0, languageFrom);
     super.initState();
-//    getSupportedLanguages().then((List<Language> languages) {
-//      setState(() {
-//        supportedLanguages = languages;
-//      });
-//    }).catchError((error) {
-//      print(error);
-//    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(detectedLanguage != null ? detectedLanguage.getName() : ''),
-          DropdownButton<Language>(
-            value: supportedLanguages?.singleWhere(
-                (Language language) => language.code == 'en',
-                orElse: () => null),
-            items: supportedLanguages?.map((Language language) {
-              return DropdownMenuItem<Language>(
-                value: language,
-                child: Text(language?.name,
-                    style: TextStyle(
-                        color: Colors.black12,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400)),
-              );
-            })?.toList(),
-            isExpanded: true,
-            hint: Text(
-              'Choose language',
-              style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400),
+    return Padding(
+        padding: EdgeInsets.all(4),
+        child: Column(
+          children: <Widget>[
+            Card(
+                child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      children: <Widget>[
+                        buildDropDownRow(),
+                        TextField(
+                          onChanged: translate,
+                          controller: editingController,
+                        )
+                      ],
+                    ))),
+            Padding(
+              padding: EdgeInsets.only(top: 4, bottom: 4),
+              child: Text('Translations'),
             ),
-            onChanged: (Language language) {
-              setState(() {
-                selectedLanguage = language;
-              });
+            Card(
+                child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        Expanded(
+                          flex: 1,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(editingController.text),
+                              Text(
+                                translation?.translatedText,
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Spacer(),
+                        Icon(Icons.favorite),
+                      ],
+                    ))),
+          ],
+        ));
+  }
+
+  Row buildDropDownRow() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          flex: 2,
+          child: DropdownButton<Language>(
+            value: languageFrom,
+            isExpanded: true,
+            underline: Container(
+              height: 1,
+              color: Colors.grey,
+            ),
+            onChanged: (Language newValue) {
+              languageFrom = newValue;
+              translate(editingController.text);
             },
+            items: supportedLanguages
+                .map<DropdownMenuItem<Language>>((Language value) {
+              return DropdownMenuItem<Language>(
+                value: value,
+                child: Text(value.getName()),
+              );
+            }).toList(),
           ),
-          TextField(
-            controller: textController,
-            decoration: InputDecoration(
-                border: InputBorder.none, hintText: 'Enter a search term'),
-            onChanged: (String text) {
-              if (text == null || text == '') {
-                detectedLanguage = null;
-              } else {
-                detectLanguage(text).then((DetectedLanguage language) {
-                  setState(() {
-                    detectedLanguage = language;
-                  });
-                });
-              }
+        ),
+        Expanded(
+          flex: 1,
+          child: Icon(Icons.repeat),
+        ),
+        Expanded(
+          flex: 2,
+          child: DropdownButton(
+            underline: Container(
+              height: 1,
+              color: Colors.grey,
+            ),
+            onChanged: (Language newValue) {
+              languageFrom = newValue;
+              translate(editingController.text);
             },
+            items: supportedLanguages
+                .map<DropdownMenuItem<Language>>((Language value) {
+              return DropdownMenuItem<Language>(
+                value: value,
+                child: Text(value.getName()),
+              );
+            }).toList(),
+            isExpanded: true,
           ),
-          Text(
-            translation?.detectedSourceLanguage ?? '',
-          ),
-          Text(
-            '${translation?.translatedText ?? ''}',
-            style: Theme.of(context).textTheme.display1,
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
-  Future<void> translateText() async {
-    translation = await translationRequest(textController.text, 'es');
+  Future<void> translate(String text) async {
+    translation = await translationRequest(text, 'es');
     setState(() {});
   }
 }
