@@ -4,13 +4,8 @@ import 'package:flutter_example_app/networking/models/language.dart';
 import 'package:flutter_example_app/networking/networking.dart' as net;
 import 'package:http/http.dart' as http;
 
-const String primaryType = 'application';
-const String subType = 'json';
-const String charset = 'utf-8';
-
 Future<List<Language>> getSupportedLanguages() async {
   String url = net.baseUrl + '/languages?key=${net.apiKey}';
-//  Map<String, String> header = net.getHeaders();
 
   final response = await http.get(url);
 
