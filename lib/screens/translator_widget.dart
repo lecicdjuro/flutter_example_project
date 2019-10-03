@@ -3,8 +3,8 @@ import 'package:flutter_example_app/networking/models/language.dart';
 import 'package:flutter_example_app/networking/models/translation.dart';
 import 'package:flutter_example_app/networking/requests/translation_request.dart';
 
-class SupernovaTranslatorScreen extends StatefulWidget {
-  SupernovaTranslatorScreen(this.supportedLanguages);
+class TranslatorScreen extends StatefulWidget {
+  TranslatorScreen(this.supportedLanguages);
 
   final List<Language> supportedLanguages;
 
@@ -13,7 +13,7 @@ class SupernovaTranslatorScreen extends StatefulWidget {
       TranslatorScreenState(supportedLanguages);
 }
 
-class TranslatorScreenState extends State<SupernovaTranslatorScreen> {
+class TranslatorScreenState extends State<TranslatorScreen> {
   TranslatorScreenState(this.supportedLanguages);
 
   int tabIndex = 0;
@@ -22,6 +22,19 @@ class TranslatorScreenState extends State<SupernovaTranslatorScreen> {
   Language languageTo;
   Language languageFrom;
   TextEditingController editingController = TextEditingController();
+  List<DropdownMenuItem<Language>> translationDropdownWidgets;
+
+  @override
+  void initState() {
+    languageTo = supportedLanguages.elementAt(0);
+    translationDropdownWidgets = supportedLanguages.map((Language language) {
+      return DropdownMenuItem<Language>(
+        child: Text(language.name),
+        value: language,
+      );
+    }).toList();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +92,7 @@ class TranslatorScreenState extends State<SupernovaTranslatorScreen> {
         Expanded(
           flex: 2,
           child: DropdownButton<Language>(
+            hint: Text('Detect'),
             value: languageFrom,
             isExpanded: true,
             underline: Container(
@@ -89,13 +103,7 @@ class TranslatorScreenState extends State<SupernovaTranslatorScreen> {
               languageFrom = newValue;
               translate(editingController.text);
             },
-            items: supportedLanguages
-                .map<DropdownMenuItem<Language>>((Language value) {
-              return DropdownMenuItem<Language>(
-                value: value,
-                child: Text(value.name),
-              );
-            }).toList(),
+            items: translationDropdownWidgets,
           ),
         ),
         Expanded(
@@ -105,21 +113,16 @@ class TranslatorScreenState extends State<SupernovaTranslatorScreen> {
         Expanded(
           flex: 2,
           child: DropdownButton(
+            value: languageTo,
             underline: Container(
               height: 1,
               color: Colors.grey,
             ),
             onChanged: (Language newValue) {
-              languageFrom = newValue;
+              languageTo = newValue;
               translate(editingController.text);
             },
-            items: supportedLanguages
-                .map<DropdownMenuItem<Language>>((Language value) {
-              return DropdownMenuItem<Language>(
-                value: value,
-                child: Text(value.name),
-              );
-            }).toList(),
+            items: translationDropdownWidgets,
             isExpanded: true,
           ),
         ),

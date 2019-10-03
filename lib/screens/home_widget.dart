@@ -39,7 +39,7 @@ class _HomeState extends State<Home> {
         ],
       ),
       body: tabIndex == 0
-          ? SupernovaTranslatorScreen(widget.supportedLanguages)
+          ? TranslatorScreen(widget.supportedLanguages)
           : FavoritesScreen(Colors.red),
     );
   }

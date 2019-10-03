@@ -10,12 +10,6 @@ class Language {
         name: translationJSON['name'] ??
             getLanguageNameByCode(translationJSON['language']));
   }
-
-  bool getLanguageNameByCod(Map<String, dynamic> translationJSON) {
-    return iso639Languages.containsKey(translationJSON['language']
-        ? iso639Languages[translationJSON['language']]['name']
-        : 'XXX');
-  }
 }
 
 final iso639Languages = {
