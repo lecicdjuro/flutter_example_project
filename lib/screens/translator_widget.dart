@@ -24,13 +24,6 @@ class TranslatorScreenState extends State<SupernovaTranslatorScreen> {
   TextEditingController editingController = TextEditingController();
 
   @override
-  void initState() {
-    languageFrom = Language(code: 'Detect');
-    supportedLanguages.insert(0, languageFrom);
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Padding(
         padding: EdgeInsets.all(4),
@@ -63,9 +56,9 @@ class TranslatorScreenState extends State<SupernovaTranslatorScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text(editingController.text),
+                              Text(editingController.text ?? ''),
                               Text(
-                                translation?.translatedText,
+                                translation?.translatedText ?? '',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ],
@@ -100,7 +93,7 @@ class TranslatorScreenState extends State<SupernovaTranslatorScreen> {
                 .map<DropdownMenuItem<Language>>((Language value) {
               return DropdownMenuItem<Language>(
                 value: value,
-                child: Text(value.getName()),
+                child: Text(value.name),
               );
             }).toList(),
           ),
@@ -124,7 +117,7 @@ class TranslatorScreenState extends State<SupernovaTranslatorScreen> {
                 .map<DropdownMenuItem<Language>>((Language value) {
               return DropdownMenuItem<Language>(
                 value: value,
-                child: Text(value.getName()),
+                child: Text(value.name),
               );
             }).toList(),
             isExpanded: true,

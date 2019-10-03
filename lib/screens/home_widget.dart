@@ -19,10 +19,10 @@ class _HomeState extends State<Home> {
   int tabIndex = 0;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext buildContext) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(LocalizationResources.of(context).title),
+        title: Text(LocalizationResources.of(buildContext).title),
       ),
       bottomNavigationBar: BottomNavigationBar(
         onTap: onTabPressed,
