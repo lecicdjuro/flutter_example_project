@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_example_app/database/transaltion_dao.dart';
 import 'package:flutter_example_app/internationalization/localizations.dart';
 import 'package:flutter_example_app/networking/models/detected_langugage.dart';
 import 'package:flutter_example_app/networking/models/language.dart';
@@ -26,6 +27,7 @@ class TranslatorScreenState extends State<TranslatorScreen> {
   Language languageTo;
   Language languageFrom;
   Language detectedLanguage;
+  TranslationDao _translationDao = TranslationDao();
 
   TextEditingController editingController = TextEditingController();
   List<DropdownMenuItem<Language>> translationDropdownWidgets;
@@ -141,7 +143,9 @@ class TranslatorScreenState extends State<TranslatorScreen> {
       if (languageFrom != null) {
         translation =
             await translationRequest(text, languageFrom.code, languageTo.code);
-        languageFrom = Language(code: translation.detectedSourceLanguage);
+        languageFrom = Language(code: translation.sourceLanguage);
+        translation.targetLanguage = languageTo.code;
+        _translationDao.insert(translation);
       }
       DetectedLanguage detectedLanguage = await detectLanguage(text);
       if (languageFrom == null || detectedLanguage.confidence < 0.91) {

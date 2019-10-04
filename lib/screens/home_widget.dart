@@ -40,7 +40,7 @@ class _HomeState extends State<Home> {
       ),
       body: tabIndex == 0
           ? TranslatorScreen(widget.supportedLanguages)
-          : FavoritesScreen(Colors.red),
+          : FavoritesScreen(),
     );
   }
 
