@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_example_app/database/transaltion_dao.dart';
 import 'package:flutter_example_app/networking/models/translation.dart';
+import 'package:flutter_example_app/screens/translation_card_item.dart';
 
 class FavoritesScreen extends StatefulWidget {
   @override
@@ -26,7 +27,15 @@ class FavoritesScreenState extends State<FavoritesScreen> {
     return ListView.builder(
       itemCount: favorites.length,
       itemBuilder: (BuildContext context, int index) {
-        return Text(favorites.elementAt(index).translatedText??'');
+        Translation translation = favorites.elementAt(index);
+        return TranslationItemWidget(
+          translation,
+          onFavoritePressed: () {
+            _translationDao.delete(translation);
+            favorites.remove(translation);
+            setState(() {});
+          },
+        );
       },
     );
   }

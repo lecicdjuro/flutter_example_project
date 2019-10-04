@@ -56,9 +56,25 @@ class TranslationDao {
       finder: finder,
     );
     return recordSnapshots.map((snapshot) {
-      final user = Translation.fromJson(snapshot.value);
-      user.key = snapshot.key;
-      return user;
+      final translation = Translation.fromJson(snapshot.value);
+      translation.key = snapshot.key;
+      return translation;
+    }).toList();
+  }
+
+  Future<List<Translation>> getTranslationByCode(
+      Translation translation) async {
+    var finder = Finder(
+      filter: Filter.equals('translatedText', translation.translatedText),
+    );
+    final recordSnapshots = await _translationStore.find(
+      await _db,
+      finder: finder,
+    );
+    return recordSnapshots.map((snapshot) {
+      final translation = Translation.fromJson(snapshot.value);
+      translation.key = snapshot.key;
+      return translation;
     }).toList();
   }
 }

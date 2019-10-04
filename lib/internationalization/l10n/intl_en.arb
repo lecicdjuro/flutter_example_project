@@ -7,23 +7,27 @@
     "type": "text",
     "placeholders": {}
   },
+  "translate": "Translate",
   "@translate": {
-      "translate": "Translate",
+      "description": "The application title",
       "type": "text",
       "placeholders": {}
    },
+  "favorite": "Favorite",
    "@favorite": {
-       "favorite": "Favorite",
+       "description": "The application title",
        "type": "text",
        "placeholders": {}
    },
+   "translations": "Translations",
    "@translations": {
-       "translations": "Translations",
+       "description": "The application title",
        "type": "text",
        "placeholders": {}
    },
+   "detect": "Detect",
    "@detect": {
-       "detect": "Detect",
+       "description": "The application title",
        "type": "text",
        "placeholders": {}
    }
