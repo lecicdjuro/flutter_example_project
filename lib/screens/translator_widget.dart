@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_example_app/database/transaltion_dao.dart';
 import 'package:flutter_example_app/internationalization/localizations.dart';
 import 'package:flutter_example_app/networking/models/detected_langugage.dart';
 import 'package:flutter_example_app/networking/models/language.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_example_app/networking/models/translation.dart';
 import 'package:flutter_example_app/networking/requests/detect_language_request.dart';
 import 'package:flutter_example_app/networking/requests/translation_request.dart';
 import 'package:flutter_example_app/resources/dimens.dart' as dimens;
+import 'package:flutter_example_app/screens/translation_card_item.dart';
 
 class TranslatorScreen extends StatefulWidget {
   TranslatorScreen(this.supportedLanguages);
@@ -26,21 +28,15 @@ class TranslatorScreenState extends State<TranslatorScreen> {
   Language languageTo;
   Language languageFrom;
   Language detectedLanguage;
+  TranslationDao _translationDao = TranslationDao();
 
   TextEditingController editingController = TextEditingController();
-  List<DropdownMenuItem<Language>> translationDropdownWidgets;
 
   @override
   void initState() {
     if (languageTo == null) {
       languageTo = supportedLanguages.elementAt(0);
     }
-    translationDropdownWidgets = supportedLanguages.map((Language language) {
-      return DropdownMenuItem<Language>(
-        child: Text(language?.name),
-        value: language,
-      );
-    }).toList();
     super.initState();
   }
 
@@ -67,29 +63,19 @@ class TranslatorScreenState extends State<TranslatorScreen> {
                   top: dimens.smallPadding, bottom: dimens.smallPadding),
               child: Text(LocalizationResources.of(context).translations),
             ),
-            Card(
-                child: Padding(
-                    padding: EdgeInsets.all(dimens.largePadding),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        Expanded(
-                          flex: 1,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(editingController.text ?? ''),
-                              Text(
-                                translation?.translatedText ?? '',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Spacer(),
-                        Icon(Icons.favorite),
-                      ],
-                    ))),
+            TranslationItemWidget(
+              translation,
+              onFavoritePressed: () {
+                setState(() {
+                  translation.isFavorite = !translation.isFavorite;
+                  if (translation.isFavorite) {
+                    _translationDao.insert(translation);
+                  } else {
+                    _translationDao.delete(translation);
+                  }
+                });
+              },
+            ),
           ],
         ));
   }
@@ -132,7 +118,12 @@ class TranslatorScreenState extends State<TranslatorScreen> {
         String text = editingController.text;
         translate(text);
       },
-      items: translationDropdownWidgets,
+      items: supportedLanguages.map((Language language) {
+        return DropdownMenuItem<Language>(
+          child: Text(language?.name),
+          value: language,
+        );
+      }).toList(),
     );
   }
 
@@ -141,13 +132,27 @@ class TranslatorScreenState extends State<TranslatorScreen> {
       if (languageFrom != null) {
         translation =
             await translationRequest(text, languageFrom.code, languageTo.code);
-        languageFrom = Language(code: translation.detectedSourceLanguage);
+        translation.textToTranslate = text;
+        languageFrom = Language(code: translation.sourceLanguage);
+        translation.targetLanguage = languageTo.code;
       }
       DetectedLanguage detectedLanguage = await detectLanguage(text);
-      if (languageFrom == null || detectedLanguage.confidence < 0.91) {
+      if (languageFrom == null || detectedLanguage.confidence < 1) {
         languageFrom = detectedLanguage;
       }
+
+      await checkForFavorite();
     }
     setState(() {});
+  }
+
+  Future checkForFavorite() async {
+     List<Translation> trans =
+        await _translationDao.getTranslationByCode(translation);
+    for (Translation t in trans) {
+      translation.isFavorite =
+          t.translatedText == translation.translatedText &&
+              t.textToTranslate == translation.textToTranslate;
+    }
   }
 }

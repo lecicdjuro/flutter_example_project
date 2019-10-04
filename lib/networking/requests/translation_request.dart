@@ -12,19 +12,23 @@ Future<Translation> translationRequest(
   final response = await http.post(url);
 
   if (response.statusCode == 200) {
-    return parseResponse(response.body);
+    return parseResponse(text, sourceLanguage, targetLanguage, response.body);
   } else {
     throw Exception('Failed to translate text');
   }
 }
 
-Translation parseResponse(dynamic response) {
+Translation parseResponse(String textToTranslate, String sourceLanguage,
+    String targetLanguage, dynamic response) {
   final dynamic responseString = json.decode(response);
   final dynamic dataJSON = responseString['data'];
 
   final List<dynamic> translationsJSON = dataJSON['translations'];
-   return translationsJSON
-      .map((dynamic translation) => Translation.fromJson(translation))
+  return translationsJSON
+      .map((dynamic translation) => Translation.fromJson(translation,
+          textToTranslate: textToTranslate,
+          sourceLanguage: sourceLanguage,
+          targetLanguage: targetLanguage))
       .toList()
       .elementAt(0);
 }
