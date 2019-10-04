@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_example_app/internationalization/localizations.dart';
+import 'package:flutter_example_app/networking/models/detected_langugage.dart';
 import 'package:flutter_example_app/networking/models/language.dart';
 import 'package:flutter_example_app/networking/models/translation.dart';
 import 'package:flutter_example_app/networking/requests/detect_language_request.dart';
@@ -24,15 +25,19 @@ class TranslatorScreenState extends State<TranslatorScreen> {
   Translation translation;
   Language languageTo;
   Language languageFrom;
+  Language detectedLanguage;
+
   TextEditingController editingController = TextEditingController();
   List<DropdownMenuItem<Language>> translationDropdownWidgets;
 
   @override
   void initState() {
-    languageTo = supportedLanguages.elementAt(0);
+    if (languageTo == null) {
+      languageTo = supportedLanguages.elementAt(0);
+    }
     translationDropdownWidgets = supportedLanguages.map((Language language) {
       return DropdownMenuItem<Language>(
-        child: Text(language.name),
+        child: Text(language?.name),
         value: language,
       );
     }).toList();
@@ -112,7 +117,11 @@ class TranslatorScreenState extends State<TranslatorScreen> {
       String hintMessage, bool isLanguageFrom) {
     return DropdownButton<Language>(
       hint: Text(hintMessage),
-      value: isLanguageFrom ? languageFrom : languageTo,
+      value: supportedLanguages.singleWhere(
+          (Language language) =>
+              language.code ==
+              (isLanguageFrom ? languageFrom?.code : languageTo?.code),
+          orElse: () => null),
       isExpanded: true,
       underline: Container(
         height: dimens.underlineHeight,
@@ -120,17 +129,24 @@ class TranslatorScreenState extends State<TranslatorScreen> {
       ),
       onChanged: (Language newValue) {
         isLanguageFrom ? languageFrom = newValue : languageTo = newValue;
-        translate(editingController.text);
+        String text = editingController.text;
+        translate(text);
       },
       items: translationDropdownWidgets,
     );
   }
 
   Future<void> translate(String text) async {
-    if (languageFrom != null) {
-      translation = await translationRequest(text, languageTo.code);
-    } else {
-      languageFrom = await detectLanguage(text);
+    if (text.isNotEmpty) {
+      if (languageFrom != null) {
+        translation =
+            await translationRequest(text, languageFrom.code, languageTo.code);
+        languageFrom = Language(code: translation.detectedSourceLanguage);
+      }
+      DetectedLanguage detectedLanguage = await detectLanguage(text);
+      if (languageFrom == null || detectedLanguage.confidence < 0.91) {
+        languageFrom = detectedLanguage;
+      }
     }
     setState(() {});
   }
