@@ -5,7 +5,7 @@ import 'package:flutter_example_app/networking/models/language.dart';
 import 'package:flutter_example_app/networking/networking.dart' as net;
 import 'package:http/http.dart' as http;
 
-Future<DetectedLanguage> detectLanguage(String text) async {
+Future<Language> detectLanguage(String text) async {
   String url = net.baseUrl + '/detect?q=$text&key=${net.apiKey}';
   final response = await http.post(url);
 
@@ -16,7 +16,7 @@ Future<DetectedLanguage> detectLanguage(String text) async {
   }
 }
 
-Language parseResponse(dynamic response) {
+DetectedLanguage parseResponse(dynamic response) {
   final dynamic responseString = json.decode(response);
   final dynamic dataJSON = responseString['data'];
 

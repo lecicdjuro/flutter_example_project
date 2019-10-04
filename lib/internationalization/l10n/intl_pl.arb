@@ -1,10 +1,30 @@
 {
   "@@last_modified": "2018-05-25T11:50:40.743319",
-  "@@locale": "pl",
+  "@@locale": "en",
   "title": "Supernova Translator",
   "@title": {
     "description": "The application title",
     "type": "text",
     "placeholders": {}
-  }
+  },
+  "@translate": {
+      "translate": "Translate",
+      "type": "text",
+      "placeholders": {}
+   },
+   "@favorite": {
+       "favorite": "Favorite",
+       "type": "text",
+       "placeholders": {}
+   },
+   "@translations": {
+       "translations": "Translations",
+       "type": "text",
+       "placeholders": {}
+   },
+   "@detect": {
+       "detect": "Detect",
+       "type": "text",
+       "placeholders": {}
+   }
 }

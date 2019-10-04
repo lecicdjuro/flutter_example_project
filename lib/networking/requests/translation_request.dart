@@ -5,10 +5,10 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_example_app/networking/networking.dart' as net;
 
 Future<Translation> translationRequest(
-    String text, String targetLanguage) async {
+    String text, String sourceLanguage, String targetLanguage) async {
   String apiKey = 'AIzaSyAqnBxr-G5811raZcYmWODowYofAnd6TjU';
-
-  String url = net.baseUrl + '?target=$targetLanguage&key=$apiKey&q=$text';
+  String url = net.baseUrl +
+      '?source=$sourceLanguage&target=$targetLanguage&key=$apiKey&q=$text';
   final response = await http.post(url);
 
   if (response.statusCode == 200) {
@@ -23,7 +23,7 @@ Translation parseResponse(dynamic response) {
   final dynamic dataJSON = responseString['data'];
 
   final List<dynamic> translationsJSON = dataJSON['translations'];
-  return translationsJSON
+   return translationsJSON
       .map((dynamic translation) => Translation.fromJson(translation))
       .toList()
       .elementAt(0);

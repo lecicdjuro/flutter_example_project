@@ -30,16 +30,16 @@ class _HomeState extends State<Home> {
         items: [
           BottomNavigationBarItem(
             icon: new Icon(Icons.translate),
-            title: new Text('Translate'),
+            title: new Text(LocalizationResources.of(context).translate),
           ),
           BottomNavigationBarItem(
             icon: new Icon(Icons.favorite),
-            title: new Text('Favorite'),
+            title: new Text(LocalizationResources.of(context).favorite),
           )
         ],
       ),
       body: tabIndex == 0
-          ? SupernovaTranslatorScreen(widget.supportedLanguages)
+          ? TranslatorScreen(widget.supportedLanguages)
           : FavoritesScreen(Colors.red),
     );
   }
