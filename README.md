@@ -10,7 +10,10 @@ The translation app allows you to select the source and output language (source 
 
 Dependencies:
 
-For database -   sembast: ^2.1.0 and   path_provider: ^1.3.0
+For database -   sembast: ^2.1.0  
+and   path_provider: ^1.3.0
+
 For networking -   http: ^0.12.0+2
+
 For internationalization -   intl_translation:
 
