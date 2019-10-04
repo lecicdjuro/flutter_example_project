@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_example_app/internationalization/localizations.dart';
 import 'package:flutter_example_app/networking/models/language.dart';
 import 'package:flutter_example_app/networking/models/translation.dart';
+import 'package:flutter_example_app/networking/requests/detect_language_request.dart';
 import 'package:flutter_example_app/networking/requests/translation_request.dart';
+import 'package:flutter_example_app/resources/dimens.dart' as dimens;
 
 class TranslatorScreen extends StatefulWidget {
   TranslatorScreen(this.supportedLanguages);
@@ -39,12 +42,12 @@ class TranslatorScreenState extends State<TranslatorScreen> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.all(4),
+        padding: EdgeInsets.all(dimens.smallPadding),
         child: Column(
           children: <Widget>[
             Card(
                 child: Padding(
-                    padding: EdgeInsets.all(16),
+                    padding: EdgeInsets.all(dimens.largePadding),
                     child: Column(
                       children: <Widget>[
                         buildDropDownRow(),
@@ -55,12 +58,13 @@ class TranslatorScreenState extends State<TranslatorScreen> {
                       ],
                     ))),
             Padding(
-              padding: EdgeInsets.only(top: 4, bottom: 4),
-              child: Text('Translations'),
+              padding: EdgeInsets.only(
+                  top: dimens.smallPadding, bottom: dimens.smallPadding),
+              child: Text(LocalizationResources.of(context).translations),
             ),
             Card(
                 child: Padding(
-                    padding: EdgeInsets.all(16),
+                    padding: EdgeInsets.all(dimens.largePadding),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
@@ -90,48 +94,44 @@ class TranslatorScreenState extends State<TranslatorScreen> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
-          flex: 2,
-          child: DropdownButton<Language>(
-            hint: Text('Detect'),
-            value: languageFrom,
-            isExpanded: true,
-            underline: Container(
-              height: 1,
-              color: Colors.grey,
-            ),
-            onChanged: (Language newValue) {
-              languageFrom = newValue;
-              translate(editingController.text);
-            },
-            items: translationDropdownWidgets,
-          ),
+          flex: dimens.bigFlexSize,
+          child: _buildDropdownButton(
+              LocalizationResources.of(context).detect, true),
         ),
         Expanded(
-          flex: 1,
+          flex: dimens.defaultFlexSize,
           child: Icon(Icons.repeat),
         ),
         Expanded(
-          flex: 2,
-          child: DropdownButton(
-            value: languageTo,
-            underline: Container(
-              height: 1,
-              color: Colors.grey,
-            ),
-            onChanged: (Language newValue) {
-              languageTo = newValue;
-              translate(editingController.text);
-            },
-            items: translationDropdownWidgets,
-            isExpanded: true,
-          ),
-        ),
+            flex: dimens.bigFlexSize, child: _buildDropdownButton('', false)),
       ],
     );
   }
 
+  DropdownButton<Language> _buildDropdownButton(
+      String hintMessage, bool isLanguageFrom) {
+    return DropdownButton<Language>(
+      hint: Text(hintMessage),
+      value: isLanguageFrom ? languageFrom : languageTo,
+      isExpanded: true,
+      underline: Container(
+        height: dimens.underlineHeight,
+        color: Colors.grey,
+      ),
+      onChanged: (Language newValue) {
+        isLanguageFrom ? languageFrom = newValue : languageTo = newValue;
+        translate(editingController.text);
+      },
+      items: translationDropdownWidgets,
+    );
+  }
+
   Future<void> translate(String text) async {
-    translation = await translationRequest(text, 'es');
+    if (languageFrom != null) {
+      translation = await translationRequest(text, languageTo.code);
+    } else {
+      languageFrom = await detectLanguage(text);
+    }
     setState(() {});
   }
 }

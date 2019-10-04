@@ -48,4 +48,20 @@ class LocalizationResources {
   String get genericError {
     return Intl.message('', name: 'genericError');
   }
+
+  String get translate {
+    return Intl.message('', name: 'translate');
+  }
+
+  String get favorite {
+    return Intl.message('', name: 'favorite');
+  }
+
+  String get translations {
+    return Intl.message('', name: 'translations');
+  }
+
+  String get detect {
+    return Intl.message('', name: 'detect');
+  }
 }
