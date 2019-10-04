@@ -124,7 +124,12 @@ class TranslatorScreenState extends State<TranslatorScreen> {
         color: Colors.grey,
       ),
       onChanged: (Language newValue) {
-        isLanguageFrom ? languageFrom = newValue : languageTo = newValue;
+        if (isLanguageFrom) {
+          languageFrom = newValue;
+          detectedLanguage = null;
+        } else {
+          languageTo = newValue;
+        }
         performTranslation(editingController.text);
       },
       items: supportedLanguages.map((Language language) {
@@ -156,9 +161,12 @@ class TranslatorScreenState extends State<TranslatorScreen> {
   Future checkForFavorite() async {
     List<Translation> trans =
         await _translationDao.getTranslationByText(translation);
-    for (Translation t in trans) {
-      translation.isFavorite = t.translatedText == translation.translatedText &&
-          t.textToTranslate == translation.textToTranslate;
+    for (Translation favorite in trans) {
+      if (favorite.translatedText == translation.translatedText &&
+          favorite.textToTranslate == translation.textToTranslate) {
+        translation = favorite;
+        break;
+      }
     }
   }
 

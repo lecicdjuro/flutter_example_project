@@ -9,6 +9,7 @@ Future<Translation> translationRequest(
   String apiKey = 'AIzaSyAqnBxr-G5811raZcYmWODowYofAnd6TjU';
   String url = net.baseUrl +
       '?source=$sourceLanguage&target=$targetLanguage&key=$apiKey&q=$text';
+  print(url);
   final response = await http.post(url);
 
   if (response.statusCode == 200) {
