@@ -21,10 +21,11 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
-    "detect" : MessageLookupByLibrary.simpleMessage("Detect"),
-    "favorite" : MessageLookupByLibrary.simpleMessage("Favorite"),
-    "title" : MessageLookupByLibrary.simpleMessage("Supernova Translator"),
-    "translate" : MessageLookupByLibrary.simpleMessage("Translate"),
-    "translations" : MessageLookupByLibrary.simpleMessage("Translations")
+    "detect" : MessageLookupByLibrary.simpleMessage("Wykryć"),
+    "detectedLanguage" : MessageLookupByLibrary.simpleMessage("Wykryty język:"),
+    "favorite" : MessageLookupByLibrary.simpleMessage("Ulubiony"),
+    "title" : MessageLookupByLibrary.simpleMessage("Tłumacz Supernova"),
+    "translate" : MessageLookupByLibrary.simpleMessage("Tłumaczyć"),
+    "translations" : MessageLookupByLibrary.simpleMessage("Tłumaczenia")
   };
 }

@@ -5,6 +5,7 @@ const double largeText = 16.0;
 
 /// padding
 const double smallPadding = 4;
+const double mediumPadding = 8;
 const double largePadding = 16;
 
 const double underlineHeight = 1;

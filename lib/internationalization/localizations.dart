@@ -64,4 +64,8 @@ class LocalizationResources {
   String get detect {
     return Intl.message('', name: 'detect');
   }
+
+  String get detectedLanguage {
+    return Intl.message('', name: 'detectedLanguage');
+  }
 }

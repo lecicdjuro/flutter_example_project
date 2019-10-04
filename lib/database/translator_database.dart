@@ -5,14 +5,14 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 
-class AppDatabase {
-  static final AppDatabase _singleton = AppDatabase._();
+class TranslatorDatabase {
+  static final TranslatorDatabase _singleton = TranslatorDatabase._();
 
-  static AppDatabase get instance => _singleton;
+  static TranslatorDatabase get instance => _singleton;
 
   Completer<Database> _dbOpenCompleter;
 
-  AppDatabase._();
+  TranslatorDatabase._();
 
   Future<Database> get database async {
     if (_dbOpenCompleter == null) {

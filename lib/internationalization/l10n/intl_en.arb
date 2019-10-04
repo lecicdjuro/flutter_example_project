@@ -30,5 +30,11 @@
        "description": "The application title",
        "type": "text",
        "placeholders": {}
+   },
+   "detectedLanguage": "Detected language:",
+   "@detect": {
+       "description": "Desc",
+       "type": "text",
+       "placeholders": {}
    }
 }
