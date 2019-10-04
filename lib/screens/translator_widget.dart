@@ -7,6 +7,8 @@ import 'package:flutter_example_app/networking/models/translation.dart';
 import 'package:flutter_example_app/networking/requests/detect_language_request.dart';
 import 'package:flutter_example_app/networking/requests/translation_request.dart';
 import 'package:flutter_example_app/resources/dimens.dart' as dimens;
+import 'package:flutter_example_app/resources/colors.dart' as colors;
+import 'package:flutter_example_app/resources/styles.dart';
 import 'package:flutter_example_app/screens/translation_card_item.dart';
 
 class TranslatorScreen extends StatefulWidget {
@@ -27,7 +29,7 @@ class TranslatorScreenState extends State<TranslatorScreen> {
   Translation translation;
   Language languageTo;
   Language languageFrom;
-  Language detectedLanguage;
+  DetectedLanguage detectedLanguage;
   TranslationDao _translationDao = TranslationDao();
 
   TextEditingController editingController = TextEditingController();
@@ -53,7 +55,7 @@ class TranslatorScreenState extends State<TranslatorScreen> {
                       children: <Widget>[
                         buildDropDownRow(),
                         TextField(
-                          onChanged: translate,
+                          onChanged: performTranslation,
                           controller: editingController,
                         )
                       ],
@@ -61,10 +63,15 @@ class TranslatorScreenState extends State<TranslatorScreen> {
             Padding(
               padding: EdgeInsets.only(
                   top: dimens.smallPadding, bottom: dimens.smallPadding),
-              child: Text(LocalizationResources.of(context).translations),
+              child: Text(
+                LocalizationResources.of(context).translations,
+                style: OpenSansStyle(
+                    color: colors.tertiaryText, fontSize: dimens.normalText),
+              ),
             ),
             TranslationItemWidget(
               translation,
+              isAutoDetect: detectedLanguage != null,
               onFavoritePressed: () {
                 setState(() {
                   translation.isFavorite = !translation.isFavorite;
@@ -91,7 +98,10 @@ class TranslatorScreenState extends State<TranslatorScreen> {
         ),
         Expanded(
           flex: dimens.defaultFlexSize,
-          child: Icon(Icons.repeat),
+          child: GestureDetector(
+            onTap: reverseItems,
+            child: Icon(Icons.swap_horiz),
+          ),
         ),
         Expanded(
             flex: dimens.bigFlexSize, child: _buildDropdownButton('', false)),
@@ -115,8 +125,7 @@ class TranslatorScreenState extends State<TranslatorScreen> {
       ),
       onChanged: (Language newValue) {
         isLanguageFrom ? languageFrom = newValue : languageTo = newValue;
-        String text = editingController.text;
-        translate(text);
+        performTranslation(editingController.text);
       },
       items: supportedLanguages.map((Language language) {
         return DropdownMenuItem<Language>(
@@ -127,32 +136,44 @@ class TranslatorScreenState extends State<TranslatorScreen> {
     );
   }
 
-  Future<void> translate(String text) async {
+  Future<void> translate(String text, {String languageCodeFrom}) async {
     if (text.isNotEmpty) {
-      if (languageFrom != null) {
-        translation =
-            await translationRequest(text, languageFrom.code, languageTo.code);
-        translation.textToTranslate = text;
-        languageFrom = Language(code: translation.sourceLanguage);
-        translation.targetLanguage = languageTo.code;
-      }
-      DetectedLanguage detectedLanguage = await detectLanguage(text);
-      if (languageFrom == null || detectedLanguage.confidence < 1) {
-        languageFrom = detectedLanguage;
-      }
+      translation =
+          await translationRequest(text, languageCodeFrom, languageTo.code);
 
       await checkForFavorite();
     }
     setState(() {});
   }
 
-  Future checkForFavorite() async {
-     List<Translation> trans =
-        await _translationDao.getTranslationByCode(translation);
-    for (Translation t in trans) {
-      translation.isFavorite =
-          t.translatedText == translation.translatedText &&
-              t.textToTranslate == translation.textToTranslate;
+  Future<void> detect(String text) async {
+    if (detectedLanguage == null || detectedLanguage.confidence < 1) {
+      detectedLanguage = await detectLanguage(text);
     }
+    translate(text, languageCodeFrom: detectedLanguage.code);
+  }
+
+  Future checkForFavorite() async {
+    List<Translation> trans =
+        await _translationDao.getTranslationByText(translation);
+    for (Translation t in trans) {
+      translation.isFavorite = t.translatedText == translation.translatedText &&
+          t.textToTranslate == translation.textToTranslate;
+    }
+  }
+
+  Future<void> performTranslation(String value) async {
+    if (languageFrom == null) {
+      await detect(value);
+    } else {
+      await translate(value, languageCodeFrom: languageFrom.code);
+    }
+  }
+
+  void reverseItems() {
+    Language temp = languageFrom ?? detectedLanguage;
+    languageFrom = languageTo;
+    languageTo = temp;
+    performTranslation(editingController.text);
   }
 }

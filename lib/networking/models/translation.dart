@@ -12,12 +12,13 @@ class Translation {
   String targetLanguage;
   bool isFavorite = false;
 
-  Translation(
-      {this.sourceLanguage,
-      this.textToTranslate,
-      this.translatedText,
-      this.targetLanguage,
-      this.isFavorite = false});
+  Translation({
+    this.sourceLanguage,
+    this.textToTranslate,
+    this.translatedText,
+    this.targetLanguage,
+    this.isFavorite = false,
+  });
 
   factory Translation.fromJson(Map<String, dynamic> translationJSON,
       {String textToTranslate, String sourceLanguage, String targetLanguage}) {

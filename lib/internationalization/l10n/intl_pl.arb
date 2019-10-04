@@ -1,31 +1,37 @@
 {
   "@@last_modified": "2018-05-25T11:50:40.743319",
   "@@locale": "pl",
-  "title": "Supernova Translator",
+  "title": "Tłumacz Supernova",
   "@title": {
     "description": "The application title",
     "type": "text",
     "placeholders": {}
   },
-  "translate": "Translate",
+  "translate": "Tłumaczyć",
   "@translate": {
       "description": "The application title",
       "type": "text",
       "placeholders": {}
    },
-  "favorite": "Favorite",
+  "favorite": "Ulubiony",
    "@favorite": {
        "description": "The application title",
        "type": "text",
        "placeholders": {}
    },
-   "translations": "Translations",
+   "translations": "Tłumaczenia",
    "@translations": {
        "description": "The application title",
        "type": "text",
        "placeholders": {}
    },
-   "detect": "Detect",
+   "detect": "Wykryć",
+   "@detect": {
+       "description": "The application title",
+       "type": "text",
+       "placeholders": {}
+   },
+   "detectedLanguage": "Wykryty język:",
    "@detect": {
        "description": "The application title",
        "type": "text",
