@@ -43,8 +43,8 @@ class TranslationItemWidget extends StatelessWidget {
                       Padding(
                         padding: EdgeInsets.only(top: dimens.mediumPadding),
                         child: Text(
-                          isAutoDetect
-                              ? '${LocalizationResources.of(context).detectedLanguage} ${translation.sourceLanguage ?? ''}'
+                          isAutoDetect && translation.translatedText.isNotEmpty
+                              ? '${LocalizationResources.of(context).detectedLanguage} ${translation?.sourceLanguage ?? ''}'
                               : '',
                           style: OpenSansStyle(
                               color: colors.tertiaryText,
@@ -55,7 +55,7 @@ class TranslationItemWidget extends StatelessWidget {
                   ),
                 ),
                 Spacer(),
-                translation != null
+                translation != null && translation.translatedText.isNotEmpty
                     ? GestureDetector(
                         onTap: onFavoritePressed,
                         child: translation.isFavorite

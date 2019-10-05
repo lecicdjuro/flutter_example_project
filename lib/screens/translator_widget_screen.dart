@@ -31,7 +31,6 @@ class TranslatorScreenState extends State<TranslatorScreen> {
   Language languageFrom;
   DetectedLanguage detectedLanguage;
   TranslationDao _translationDao = TranslationDao();
-
   TextEditingController editingController = TextEditingController();
 
   @override
@@ -46,44 +45,52 @@ class TranslatorScreenState extends State<TranslatorScreen> {
   Widget build(BuildContext context) {
     return Padding(
         padding: EdgeInsets.all(dimens.smallPadding),
-        child: Column(
-          children: <Widget>[
-            Card(
-                child: Padding(
-                    padding: EdgeInsets.all(dimens.largePadding),
-                    child: Column(
-                      children: <Widget>[
-                        buildDropDownRow(),
-                        TextField(
-                          onChanged: performTranslation,
-                          controller: editingController,
-                        )
-                      ],
-                    ))),
-            Padding(
-              padding: EdgeInsets.only(
-                  top: dimens.smallPadding, bottom: dimens.smallPadding),
-              child: Text(
-                LocalizationResources.of(context).translations,
-                style: OpenSansStyle(
-                    color: colors.tertiaryText, fontSize: dimens.normalText),
-              ),
-            ),
-            TranslationItemWidget(
-              translation,
-              isAutoDetect: detectedLanguage != null,
-              onFavoritePressed: () {
-                setState(() {
-                  translation.isFavorite = !translation.isFavorite;
-                  if (translation.isFavorite) {
-                    _translationDao.insert(translation);
-                  } else {
-                    _translationDao.delete(translation);
-                  }
-                });
+        child: SingleChildScrollView(
+          child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onPanDown: (_) {
+                FocusScope.of(context).unfocus();
               },
-            ),
-          ],
+              child: Column(
+                children: <Widget>[
+                  Card(
+                      child: Padding(
+                          padding: EdgeInsets.all(dimens.largePadding),
+                          child: Column(
+                            children: <Widget>[
+                              buildDropDownRow(),
+                              TextField(
+                                onChanged: performTranslation,
+                                controller: editingController,
+                              )
+                            ],
+                          ))),
+                  Padding(
+                    padding: EdgeInsets.only(
+                        top: dimens.smallPadding, bottom: dimens.smallPadding),
+                    child: Text(
+                      LocalizationResources.of(context).translations,
+                      style: OpenSansStyle(
+                          color: colors.tertiaryText,
+                          fontSize: dimens.normalText),
+                    ),
+                  ),
+                  TranslationItemWidget(
+                    translation,
+                    isAutoDetect: detectedLanguage != null,
+                    onFavoritePressed: () {
+                      setState(() {
+                        translation.isFavorite = !translation.isFavorite;
+                        if (translation.isFavorite) {
+                          _translationDao.insert(translation);
+                        } else {
+                          _translationDao.delete(translation);
+                        }
+                      });
+                    },
+                  ),
+                ],
+              )),
         ));
   }
 
@@ -142,20 +149,17 @@ class TranslatorScreenState extends State<TranslatorScreen> {
   }
 
   Future<void> translate(String text, {String languageCodeFrom}) async {
-    if (text.isNotEmpty) {
-      translation =
-          await translationRequest(text, languageCodeFrom, languageTo.code);
-
-      await checkForFavorite();
-    }
-    setState(() {});
+    translation =
+        await translationRequest(text, languageCodeFrom, languageTo.code);
+    await checkForFavorite();
   }
 
   Future<void> detect(String text) async {
-    if (detectedLanguage == null || detectedLanguage.confidence < 1) {
+    if (detectedLanguage == null ||
+        detectedLanguage.isUndetermined() ||
+        detectedLanguage.confidence < 1) {
       detectedLanguage = await detectLanguage(text);
     }
-    translate(text, languageCodeFrom: detectedLanguage.code);
   }
 
   Future checkForFavorite() async {
@@ -170,12 +174,18 @@ class TranslatorScreenState extends State<TranslatorScreen> {
     }
   }
 
-  Future<void> performTranslation(String value) async {
+  Future<void> performTranslation(String text) async {
+    String languageCodeFrom = '';
     if (languageFrom == null) {
-      await detect(value);
+      await detect(text);
+      languageCodeFrom =
+          detectedLanguage.code != 'und' ? detectedLanguage.code : '';
     } else {
-      await translate(value, languageCodeFrom: languageFrom.code);
+      languageCodeFrom = languageFrom.code;
     }
+    await translate(text, languageCodeFrom: languageCodeFrom);
+
+    setState(() {});
   }
 
   void reverseItems() {

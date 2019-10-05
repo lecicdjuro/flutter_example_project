@@ -1,7 +1,6 @@
 const String english = 'en';
 const String polish = 'pl';
 
-
 final languages = {
   'af': 'Afrikaans',
   'sq': 'Albanian',
@@ -106,5 +105,6 @@ final languages = {
   'xh': 'Xhosa',
   'yi': 'Yiddish',
   'yo': 'Yoruba',
-  'zu': 'Zulu'
+  'zu': 'Zulu',
+  'und': 'Undetermined'
 };

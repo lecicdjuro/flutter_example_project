@@ -15,4 +15,8 @@ class DetectedLanguage extends Language {
         translationJSON['name'] ??
         getLanguageName(translationJSON['language']));
   }
+
+  bool isUndetermined() {
+    return code == 'und';
+  }
 }
