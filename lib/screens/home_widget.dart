@@ -22,6 +22,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext buildContext) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text(LocalizationResources.of(buildContext).title),
       ),
       bottomNavigationBar: BottomNavigationBar(

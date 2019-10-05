@@ -6,9 +6,7 @@ import 'package:flutter_example_app/networking/networking.dart' as net;
 
 Future<Translation> translationRequest(
     String text, String sourceLanguage, String targetLanguage) async {
-  String apiKey = 'AIzaSyAqnBxr-G5811raZcYmWODowYofAnd6TjU';
-  String url = net.baseUrl +
-      '?source=$sourceLanguage&target=$targetLanguage&key=$apiKey&q=$text';
+  String url = buildUrl(net.baseUrl, text, sourceLanguage, targetLanguage);
   print(url);
   final response = await http.post(url);
 
@@ -32,4 +30,22 @@ Translation parseResponse(String textToTranslate, String sourceLanguage,
           targetLanguage: targetLanguage))
       .toList()
       .elementAt(0);
+}
+
+String buildUrl(
+    String url, String text, String sourceLanguage, String targetLanguage) {
+  url += '?';
+  if (sourceLanguage.isNotEmpty && targetLanguage.isNotEmpty) {
+    url += 'source=$sourceLanguage';
+    url += '&';
+    url += 'target=$targetLanguage';
+  } else {
+    url += 'target=$targetLanguage';
+  }
+  url += '&';
+  url += 'key=${net.apiKey}';
+  url += '&';
+  url += 'q=$text';
+
+  return url;
 }
