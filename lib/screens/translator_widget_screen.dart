@@ -142,20 +142,30 @@ class TranslatorScreenState extends State<TranslatorScreen> {
   }
 
   Future<void> translate(String text, {String languageCodeFrom}) async {
-    if (text.isNotEmpty) {
-      translation =
-          await translationRequest(text, languageCodeFrom, languageTo.code);
-
-      await checkForFavorite();
-    }
+    translation =
+        await translationRequest(text, languageCodeFrom, languageTo.code);
+    await checkForFavorite();
     setState(() {});
   }
 
   Future<void> detect(String text) async {
-    if (detectedLanguage == null || detectedLanguage.confidence < 1) {
+    if (detectedLanguage == null ||
+        detectedLanguage.isUndetermined() ||
+        detectedLanguage.confidence < 1) {
       detectedLanguage = await detectLanguage(text);
     }
-    translate(text, languageCodeFrom: detectedLanguage.code);
+    if (detectedLanguage.code != 'und') {
+      await translate(text, languageCodeFrom: detectedLanguage.code);
+    } else {
+      setState(() {
+        translation = Translation(
+            sourceLanguage: detectedLanguage.code,
+            targetLanguage: languageTo.code,
+            translatedText: detectedLanguage.name,
+            textToTranslate: text,
+            isFavorite: false);
+      });
+    }
   }
 
   Future checkForFavorite() async {
@@ -171,10 +181,17 @@ class TranslatorScreenState extends State<TranslatorScreen> {
   }
 
   Future<void> performTranslation(String value) async {
-    if (languageFrom == null) {
-      await detect(value);
+    if (value.isEmpty) {
+      setState(() {
+        detectedLanguage = null;
+        translation = null;
+      });
     } else {
-      await translate(value, languageCodeFrom: languageFrom.code);
+      if (languageFrom == null) {
+        await detect(value);
+      } else {
+        await translate(value, languageCodeFrom: languageFrom.code);
+      }
     }
   }
 

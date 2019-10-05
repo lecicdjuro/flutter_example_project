@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_example_app/internationalization/localizations.dart';
 import 'package:flutter_example_app/networking/models/language.dart';
-import 'package:flutter_example_app/screens/favorites_widget.dart';
-import 'package:flutter_example_app/screens/translator_widget.dart';
+import 'package:flutter_example_app/screens/favorites_widget_screen.dart';
+import 'package:flutter_example_app/screens/translator_widget_screen.dart';
 
 class Home extends StatefulWidget {
   Home(this.supportedLanguages);

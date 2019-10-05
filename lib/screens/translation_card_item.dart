@@ -44,7 +44,7 @@ class TranslationItemWidget extends StatelessWidget {
                         padding: EdgeInsets.only(top: dimens.mediumPadding),
                         child: Text(
                           isAutoDetect
-                              ? '${LocalizationResources.of(context).detectedLanguage} ${translation.sourceLanguage ?? ''}'
+                              ? '${LocalizationResources.of(context).detectedLanguage} ${translation?.sourceLanguage ?? ''}'
                               : '',
                           style: OpenSansStyle(
                               color: colors.tertiaryText,
